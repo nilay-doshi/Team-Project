@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -42,6 +43,10 @@ namespace Team.Service.Service
                         Status = 400,
                         Message = "Email or Password is null"
                     };
+                }
+                if (userRegistration.Dob.Year > DateTime.Now.Year )
+                {
+                    return new ResponseDTO { Status =400, Message ="Dob cannot be greater then current date"};
                 }
 
                 userRegistration.Password = "team1234";
