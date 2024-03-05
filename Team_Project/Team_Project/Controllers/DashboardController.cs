@@ -17,7 +17,6 @@ namespace Team_Project.Controllers
         }
 
         [Authorize(Roles = "1,5")]
-        // [AllowAnonymous]
         [HttpGet("getCaptainDashboard")]
         public string getCaptainDashboard()
         {
