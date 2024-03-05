@@ -35,7 +35,7 @@ namespace Team.Repo.Models
 
         public DateOnly Dob { get; set; }
 
-        public int? FlagRole { get; set; } = 1;
+        public int? FlagRole { get; set; } = 0;
 
         public int? FlagCouunt { get; set; } = 0;
     }

@@ -2,13 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Team.Repo.Interface;
 using Team.Repo.Models;
 using Team.Service.DTO;
@@ -25,10 +21,10 @@ namespace Team.Service.Service
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthService(IEmailService emailService,IPasswordHasher<UserRegistration> passwordHasher,IPasswordHasher<UpdatepasswordDTO> passwordHasher1, IUserRepository userRepository,IConfiguration configuration,IHttpContextAccessor httpContextAccessor)
+        public AuthService(IEmailService emailService, IPasswordHasher<UserRegistration> passwordHasher, IPasswordHasher<UpdatepasswordDTO> passwordHasher1, IUserRepository userRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _emailService = emailService;
-            _passwordHasher = passwordHasher;   
+            _passwordHasher = passwordHasher;
             _userRepository = userRepository;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
@@ -43,42 +39,45 @@ namespace Team.Service.Service
                 {
                     return new ResponseDTO
                     {
-                        Status = 500,
+                        Status = 400,
                         Message = "Email or Password is null"
                     };
                 }
 
                 userRegistration.Password = "team1234";
+                userRegistration.FlagRole = 0;
+                userRegistration.FlagCouunt = 0;
                 userRegistration.Password = _passwordHasher.HashPassword(userRegistration, userRegistration.Password);
-                await _userRepository.Adduser(userRegistration);
+                var user = await _userRepository.Adduser(userRegistration);
                 await _emailService.SendEmail(userRegistration.Email, "Welcome to our platform " + userRegistration.FirstName, "Thank you for signing up! " + userRegistration.FirstName + " " + userRegistration.LastName);
-                
+                userRegistration.Password = null;
                 return new ResponseDTO
-                {    
+                {
                     Status = 200,
-                    Message = "Data Entered Success"
+                    Message = "Data Entered Success",
+                    Data = user
                 };
 
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return new ResponseDTO { Status = 500 , Error = ex.Message };
+                return new ResponseDTO { Status = 500, Error = ex.Message };
             }
         }
 
         public async Task<ResponseDTO> GetTokenAsync(UserLoginDTO userlogin)
         {
-            try 
-            { 
-            if (userlogin == null)
+            try
             {
-                return new ResponseDTO
+                if (userlogin == null)
                 {
-                    Status = 500,
-                    Message = "Email or Password is null"
-                };
-            }
+                    return new ResponseDTO
+                    {
+                        Status = 400,
+                        Message = "Email or Password is null"
+                    };
+                }
                 var user = await _userRepository.CheckUserAuthAsync(userlogin.Email, userlogin.Password);
 
                 var resultPassword = _passwordHasher.VerifyHashedPassword(user, user.Password, userlogin.Password);
@@ -87,13 +86,13 @@ namespace Team.Service.Service
                 {
                     userlogin.Password = null;
                     user.Password = null;
-                    
+
                     var token = CreateToken(userlogin);
 
                     if (user == null)
                         return new ResponseDTO { Message = "User not found " };
 
-                    return new ResponseDTO { token = token };
+                    return new ResponseDTO { Status = 200, Message = "Success", token = token };
                 }
                 else
                 {
@@ -112,19 +111,19 @@ namespace Team.Service.Service
             {
                 return new ResponseDTO { Message = "Enter valid password" };
             }
-                var emailClam = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "email");
+            var emailClam = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "email");
             string emailClaim = null;
             if (emailClam != null)
             {
-                 emailClaim = emailClam.Value;
+                emailClaim = emailClam.Value;
 
                 updatepassworddto.newPassword = _passwordHasher1.HashPassword(updatepassworddto, updatepassworddto.newPassword);
                 var updatePassword = await _userRepository.updatePassword(emailClaim, updatepassworddto.newPassword);
-                _emailService.SendEmail(emailClaim, "Password changed", "Your password has been updated. Thank You");
-                return new ResponseDTO { allData = updatePassword.ToString() };
+                await _emailService.SendEmail(emailClaim, "Password changed", "Your password has been updated. Thank You");
+                return new ResponseDTO { Status = 200, Message ="Success",  allData = updatePassword.ToString() };
             }
-            return new ResponseDTO { Message = "Error in code" };
-               
+            return new ResponseDTO { Status = 400, Message = "Error in code" };
+
         }
 
         private string CreateToken(UserLoginDTO userlogin)

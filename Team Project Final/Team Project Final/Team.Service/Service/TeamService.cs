@@ -22,7 +22,7 @@ namespace Team.Service.Service
             {
                 var Checkplayerscount = await _teamRepository.checkPlayercount();
                 var Checkcaptaincount = await _teamRepository.checkCaptaincount();
-                var afteraddCount = 0;
+                int afteraddCount = 0;
                 int playerCount = int.Parse(Checkplayerscount);
                 int captaincount = int.Parse(Checkcaptaincount);
                 if (captaincount > 0)
@@ -37,10 +37,11 @@ namespace Team.Service.Service
 
                 if (playerCount > 14 || afteraddCount > 15)
                 {
+                    var afteraddCount1 = afteraddCount - 1;
                     return new ResponseDTO
                     {
-                        Status = 500,
-                        Message = "Error"
+                        Status = 403,
+                        Message = "add less number of players. Current number of players in team are "+afteraddCount1
                     };
                 }
                 var players = await _teamRepository.SavePlayers(teamdto.playersEmail);
@@ -51,18 +52,18 @@ namespace Team.Service.Service
                     return new ResponseDTO
                     {
                         Status = 500,
-                        Message = "Error"
+                        Message = "Internal Server Error"
                     };
                 }
                 return new ResponseDTO
                 {
                     Status = 200,
-                    Message = "Success",
+                    Message = "Success"
                 };
             }
             return new ResponseDTO
             {
-                Status = 500,
+                Status = 401,
                 Message = "Coach email cannot be verifies"
             };
         }
@@ -74,7 +75,7 @@ namespace Team.Service.Service
 
             if (captaincount != 0)
             {
-                return new ResponseDTO { Status = 500, Message = "Captain already exists." };
+                return new ResponseDTO { Status = 400, Message = "Captain already exists." };
             }
 
             var makecaptain = await _teamRepository.SaveCaptain(teamDTO.captainEmail);
@@ -87,14 +88,14 @@ namespace Team.Service.Service
             try
             {
                 var user = await _teamRepository.getCaptain();
-                var user1 = " Name : " + user.captainName + "Email" + user.captainEmail;
-                return new ResponseDTO { Status = 200, allData = user1 };
+               // var userName =  user.captainName; 
+              //  var userEmail = user.captainEmail;
+                return new ResponseDTO { Status = 200, allData ="Name : "+ user.captainName + " Email : " + user.captainEmail };
             }
             catch (Exception ex)
             {
                 string errorMessage = ex.Message;
                 throw new NotImplementedException(errorMessage);
-
             }
         }
 
@@ -103,8 +104,9 @@ namespace Team.Service.Service
             try
             {
                 var users = await _teamRepository.getallPlayers();
-                var dashboardUsers = users.Select(user => $"{user.playerEmail} {user.playerName}").ToList();
-                var finalplayers = string.Join(", ", dashboardUsers);
+                var dashboardEmail = users.Select(user => $"{user.playerEmail}").ToList();
+                var dashboardName = users.Select(user => $"{user.playerName}").ToList();
+                var finalplayers = string.Join(",Email :  ", dashboardEmail, " Name : ",dashboardName);
 
                 return new ResponseDTO
                 {
@@ -125,7 +127,7 @@ namespace Team.Service.Service
             try
             {
                 var user = await _teamRepository.getCoach();
-                return new ResponseDTO { allData = user.coachEmail + " " +user.coachName };
+                return new ResponseDTO { allData = " Email : " + user.coachEmail + " Name " +user.coachName };
             }
             catch (Exception ex)
             {

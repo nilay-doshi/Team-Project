@@ -16,13 +16,16 @@ namespace Team.Repo.Repositories
         {
             _dbContext = teamDBContext;
         }
-        public async Task Adduser(UserRegistration userRegistration)
+        public async Task<UserRegistration> Adduser(UserRegistration userRegistration)
         {
             try
             {
                  await _dbContext.Registration.AddAsync(userRegistration);
                  await _dbContext.SaveChangesAsync();
-               
+
+                var user = await CheckUserAuthAsync(userRegistration.Email,userRegistration.Password);
+                user.Password = null;
+                return user;
             }
             catch(Exception ex)
             {
@@ -36,7 +39,6 @@ namespace Team.Repo.Repositories
             try
             {
                 var user = await _dbContext.Registration.FirstOrDefaultAsync(u => u.Email == email);
-
                 return user;
             }
             catch (Exception ex)
@@ -71,7 +73,7 @@ namespace Team.Repo.Repositories
                 if (user != null)
                 {
                     user.Password = password;
-                    _dbContext.SaveChangesAsync();
+                    await _dbContext.SaveChangesAsync();
                     user.Password = null;
                     password = null;
                     return "Password updated successfully";

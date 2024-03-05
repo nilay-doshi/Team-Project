@@ -47,15 +47,14 @@ namespace Team.Repo.Repositories
         {
             try
             {
-                var makeCaptain = _dbContext.Registration
-                          .FirstOrDefault(u => u.Email == captainEmail && u.FlagRole == 1);
+                var makeCaptain = await _dbContext.Registration
+                          .FirstOrDefaultAsync(u => u.Email == captainEmail && u.FlagRole == 1);
                 if (makeCaptain != null)
                 {
                     makeCaptain.FlagRole = 2;
-                    _dbContext.SaveChanges();
+                   await _dbContext.SaveChangesAsync();
                     makeCaptain.Password = null;
                 }
-
                 return makeCaptain;
             }
             catch (Exception ex)
@@ -69,10 +68,10 @@ namespace Team.Repo.Repositories
         {
             try
             {
-                var captainNameDb = _dbContext.Registration
+                var captainNameDb = await _dbContext.Registration
                                      .Where(u => u.FlagRole == 2)
                                      .Select(u => new { u.FirstName, u.Email })
-                                     .FirstOrDefault();
+                                     .FirstOrDefaultAsync();
 
                 DashBoardDTO dashboard = new DashBoardDTO()
                 {
@@ -93,7 +92,7 @@ namespace Team.Repo.Repositories
         {
             try
             {
-                var players = _dbContext.Registration
+                var players =  _dbContext.Registration
                               .Where(u => u.FlagRole == 1 || u.FlagRole == 2)
                               .Select(u => new { u.Email, u.FirstName })
                               .ToList();
