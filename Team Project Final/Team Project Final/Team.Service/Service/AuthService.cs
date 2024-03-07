@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -44,9 +43,9 @@ namespace Team.Service.Service
                         Message = "Email or Password is null"
                     };
                 }
-                if (userRegistration.Dob.Year > DateTime.Now.Year )
+                if (userRegistration.Dob.Year > DateTime.Now.Year)
                 {
-                    return new ResponseDTO { Status =400, Message ="Dob cannot be greater then current date"};
+                    return new ResponseDTO { Status = 400, Message = "Dob cannot be greater then current date" };
                 }
 
                 userRegistration.Password = "team1234";
@@ -125,7 +124,7 @@ namespace Team.Service.Service
                 updatepassworddto.newPassword = _passwordHasher1.HashPassword(updatepassworddto, updatepassworddto.newPassword);
                 var updatePassword = await _userRepository.updatePassword(emailClaim, updatepassworddto.newPassword);
                 await _emailService.SendEmail(emailClaim, "Password changed", "Your password has been updated. Thank You");
-                return new ResponseDTO { Status = 200, Message ="Success",  allData = updatePassword.ToString() };
+                return new ResponseDTO { Status = 200, Message = "Success", allData = updatePassword.ToString() };
             }
             return new ResponseDTO { Status = 400, Message = "Error in code" };
 

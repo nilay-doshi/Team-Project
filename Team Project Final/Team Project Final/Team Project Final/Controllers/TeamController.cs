@@ -6,20 +6,18 @@ using Team.Service.Interface;
 
 namespace Team_Project_Final.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class TeamController : ControllerBase
+    public class TeamController : BaseController
     {
-        private readonly IUserRepository _userRepository;
         private readonly ITeamService _teamService;
 
-
-        public TeamController(IUserRepository userRepository, ITeamService teamService)
+        #region constructor region
+        public TeamController(ITeamService teamService)
         {
-            _userRepository = userRepository;
             _teamService = teamService;
         }
+        #endregion
 
+        #region Create team by coach api
         [Authorize(Roles = "5")]
         [HttpPost("CreateTeamByCoach")]
         public async Task<IActionResult> CreateTeamByCoach(CreateTeamDTO teamdto)
@@ -42,7 +40,9 @@ namespace Team_Project_Final.Controllers
                 throw new NotImplementedException(errorMessage);
             }
         }
+        #endregion
 
+        #region Create Captain
         [Authorize(Roles = "5")]
         [HttpPost("CreateCaptain")]
         public async Task<IActionResult> CreateCaptain(CreateTeamDTO teamdto)
@@ -62,6 +62,9 @@ namespace Team_Project_Final.Controllers
                 throw new NotImplementedException(errorMessage);
             }
         }
+        #endregion
+
+        #region Create Team by Captain Api
 
         [Authorize(Roles = "2")]
         [HttpPost("CreateTeamByCaptain")]
@@ -83,6 +86,9 @@ namespace Team_Project_Final.Controllers
                 throw new NotImplementedException(errorMessage);
             }
         }
+        #endregion
+
+        #region Get Captain Detail
 
         [Authorize(Roles = "1,5")]
         [HttpGet("getCaptainDashboard")]
@@ -91,6 +97,9 @@ namespace Team_Project_Final.Controllers
             var user = await _teamService.getCaptain();
             return Ok(user);
         }
+        #endregion
+
+        #region Get Players Detail 
 
         [Authorize(Roles = "2,5")]
         [HttpGet("getAllPlayersDashboard")]
@@ -99,7 +108,9 @@ namespace Team_Project_Final.Controllers
             var users = await _teamService.getPlayers();
             return Ok(users);
         }
+        #endregion
 
+        #region Get Coach Api
         [Authorize(Roles = "1,5")]
         [HttpGet("getCoachDashboard")]
         public async Task<IActionResult> getCoachDashboard()
@@ -107,6 +118,7 @@ namespace Team_Project_Final.Controllers
             var user = await _teamService.getCoach();
             return Ok(user);
         }
+        #endregion
 
     }
 }

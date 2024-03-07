@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Team.Repo.Models;
 using Team.Service.DTO;
@@ -9,31 +6,37 @@ using Team.Service.Interface;
 
 namespace Team_Project_Final.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly IAuthService _authService;
-        
+
+#region constructor
         public AuthController(IAuthService authService, IHttpContextAccessor httpContextAccessor)
         {
             _authService = authService;
          }
+        #endregion
 
+#region User Registration
         [HttpPost("adduser")]
         public async Task<IActionResult> adduser(UserRegistration userRegistration)
         {
             return Ok(await _authService.Adduser(userRegistration));
         }
+        #endregion
+
+#region Get Token
 
         [HttpPost("gettoken")]
         public async Task<IActionResult> GetToken(UserLoginDTO userlogindto)
         {
             return Ok(await _authService.GetTokenAsync(userlogindto));
         }
+        #endregion
 
+#region Update Password
         [Authorize]
-        [HttpPost("updatepassword")]
+        [HttpPut("updatepassword")]
         public async Task<IActionResult> updatepassword(UpdatepasswordDTO updatePassworddto)
         {
             try
@@ -47,6 +50,7 @@ namespace Team_Project_Final.Controllers
                 throw new Exception(errorMessage);
             }
         }
+#endregion
 
     }
 }

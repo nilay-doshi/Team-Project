@@ -28,9 +28,9 @@ namespace Team.Repo.Repositories
         }
         public async Task<List<UserRegistration>> SavePlayers(string[] playersEmail)
         {
-            var users = _dbContext.Registration
+            var users = await _dbContext.Registration
                                .Where(u => playersEmail.Contains(u.Email) && u.FlagRole == 0)
-                               .ToList();
+                               .ToListAsync();
 
             foreach (var user in users)
             {
@@ -92,10 +92,10 @@ namespace Team.Repo.Repositories
         {
             try
             {
-                var players =  _dbContext.Registration
+                var players =  await _dbContext.Registration
                               .Where(u => u.FlagRole == 1 || u.FlagRole == 2)
                               .Select(u => new { u.Email, u.FirstName })
-                              .ToList();
+                              .ToListAsync();
 
                 var playerList = new List<DashBoardDTO>();
 

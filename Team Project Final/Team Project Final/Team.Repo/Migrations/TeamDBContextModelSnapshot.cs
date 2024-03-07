@@ -53,7 +53,7 @@ namespace Team.Repo.Migrations
 
                     b.HasKey("Email");
 
-                    b.ToTable("Coaches");
+                    b.ToTable("Coaches", (string)null);
 
                     b.HasData(
                         new
@@ -110,7 +110,7 @@ namespace Team.Repo.Migrations
 
                     b.HasKey("Email");
 
-                    b.ToTable("Registration");
+                    b.ToTable("Registration", (string)null);
                 });
 #pragma warning restore 612, 618
         }
