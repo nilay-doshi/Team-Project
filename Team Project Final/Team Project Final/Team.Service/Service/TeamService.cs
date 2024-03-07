@@ -7,15 +7,15 @@ namespace Team.Service.Service
     public class TeamService : ITeamService
     {
         private readonly ITeamRepository _teamRepository;
+
+        #region Constructor
         public TeamService(ITeamRepository teamRepository)
         {
             _teamRepository = teamRepository;
         }
+        #endregion
 
-        public Task Savecaptain(CreateTeamDTO teamdto)
-        {
-            throw new NotImplementedException();
-        }
+        #region Save Players
         public async Task<ResponseDTO> SavePlayers(CreateTeamDTO teamdto)
         {
             if (teamdto.coachEmail == "nilaydoshi@gmail.com")
@@ -67,6 +67,9 @@ namespace Team.Service.Service
                 Message = "Coach email cannot be verifies"
             };
         }
+        #endregion
+
+        #region Save Captain
 
         public async Task<ResponseDTO> SaveCaptain(CreateTeamDTO teamDTO)
         {
@@ -82,6 +85,9 @@ namespace Team.Service.Service
             return new ResponseDTO { Status = 200, Data = makecaptain, Message = "User created captain successfully" };
 
         }
+        #endregion
+
+        #region GetCaptainDetail
 
         public async Task<ResponseDTO> getCaptain()
         {
@@ -98,20 +104,22 @@ namespace Team.Service.Service
                 throw new NotImplementedException(errorMessage);
             }
         }
+        #endregion
+
+        #region GetPlayers Detail
 
         public async Task<ResponseDTO> getPlayers()
         {
             try
             {
                 var users = await _teamRepository.getallPlayers();
-                var dashboardEmail = users.Select(user => $"{user.playerEmail}").ToList();
-                var dashboardName = users.Select(user => $"{user.playerName}").ToList();
-                var finalplayers = string.Join(",Email :  ", dashboardEmail, " Name : ",dashboardName);
+                var playerDetails = users.Select(user => $"Email: {user.playerEmail}, Name: {user.playerName}");
+                var finalPlayers = string.Join(", ", playerDetails);
 
                 return new ResponseDTO
                 {
                     Status = 200,
-                    allData = finalplayers
+                    allData = finalPlayers
                 };
             }
             catch (Exception ex)
@@ -121,19 +129,23 @@ namespace Team.Service.Service
 
             }
         }
+        #endregion
+
+        #region GetCoachDetail
 
         public async Task<ResponseDTO> getCoach()
         {
             try
             {
                 var user = await _teamRepository.getCoach();
-                return new ResponseDTO { allData = " Email : " + user.coachEmail + " Name " +user.coachName };
+                return new ResponseDTO { allData = " Email : " + user.coachEmail + " , Name " +user.coachName ,Status = 200 , Message = "Success", Error = "null" };
             }
             catch (Exception ex)
-            {
+            {   
                 string errorMessage = ex.Message;
                 throw new NotImplementedException(errorMessage);
             }
         }
+        #endregion
     }
 }

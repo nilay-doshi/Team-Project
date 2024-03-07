@@ -8,7 +8,7 @@ using Team.Repo.Models;
 
 namespace Team.Repo
 {
-    public class TeamDBContext:DbContext
+    public class TeamDBContext : DbContext
     {
         public TeamDBContext(DbContextOptions<TeamDBContext> options):base(options) { }
 

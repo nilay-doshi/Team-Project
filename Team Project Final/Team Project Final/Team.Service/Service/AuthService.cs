@@ -21,6 +21,8 @@ namespace Team.Service.Service
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        #region Constructor
+
         public AuthService(IEmailService emailService, IPasswordHasher<UserRegistration> passwordHasher, IPasswordHasher<UpdatepasswordDTO> passwordHasher1, IUserRepository userRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _emailService = emailService;
@@ -30,6 +32,10 @@ namespace Team.Service.Service
             _httpContextAccessor = httpContextAccessor;
             _passwordHasher1 = passwordHasher1;
         }
+
+        #endregion
+
+        #region Register User
 
         public async Task<ResponseDTO> Adduser(UserRegistration userRegistration)
         {
@@ -53,7 +59,7 @@ namespace Team.Service.Service
                 userRegistration.FlagCouunt = 0;
                 userRegistration.Password = _passwordHasher.HashPassword(userRegistration, userRegistration.Password);
                 var user = await _userRepository.Adduser(userRegistration);
-                await _emailService.SendEmail(userRegistration.Email, "Welcome to our platform " + userRegistration.FirstName, "Thank you for signing up! " + userRegistration.FirstName + " " + userRegistration.LastName);
+                await _emailService.SendEmail(userRegistration.Email, "Welcome to our platform " + userRegistration.FirstName, "Thank you for signing up! on our portal " + userRegistration.FirstName + " " + userRegistration.LastName + " . You can login using your email : " + userRegistration.Email);
                 userRegistration.Password = null;
                 return new ResponseDTO
                 {
@@ -70,6 +76,9 @@ namespace Team.Service.Service
             }
         }
 
+        #endregion
+
+        #region gettoken
         public async Task<ResponseDTO> GetTokenAsync(UserLoginDTO userlogin)
         {
             try
@@ -108,7 +117,9 @@ namespace Team.Service.Service
                 return new ResponseDTO { Status = 500, Error = ex.Message };
             }
         }
+        #endregion
 
+        #region Update Password
         public async Task<ResponseDTO> updatepassword(UpdatepasswordDTO updatepassworddto)
         {
             if (updatepassworddto == null || string.IsNullOrEmpty(updatepassworddto.newPassword))
@@ -123,12 +134,15 @@ namespace Team.Service.Service
 
                 updatepassworddto.newPassword = _passwordHasher1.HashPassword(updatepassworddto, updatepassworddto.newPassword);
                 var updatePassword = await _userRepository.updatePassword(emailClaim, updatepassworddto.newPassword);
-                await _emailService.SendEmail(emailClaim, "Password changed", "Your password has been updated. Thank You");
+                await _emailService.SendEmail(emailClaim, "Password changed", "Your password has been updated. You can login using your new password on our portal ");
                 return new ResponseDTO { Status = 200, Message = "Success", allData = updatePassword.ToString() };
             }
             return new ResponseDTO { Status = 400, Message = "Error in code" };
 
         }
+        #endregion
+
+        #region Creating token
 
         private string CreateToken(UserLoginDTO userlogin)
         {
@@ -154,5 +168,6 @@ namespace Team.Service.Service
 
             return jwt;
         }
+        #endregion
     }
 }
