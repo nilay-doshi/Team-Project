@@ -11,6 +11,7 @@ namespace Team.Service.Service
 {
     public class EmailService : IEmailService
     {
+        #region Send Email
         public async Task SendEmail(string to, string subject, string body)
         {
             using (SmtpClient smtpClient = new SmtpClient("smtp.Gmail.com"))
@@ -26,5 +27,6 @@ namespace Team.Service.Service
                 await smtpClient.SendMailAsync(mailMessage);
             }
         }
+        #endregion
     }
 }

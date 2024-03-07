@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace Team.Repo.Models
 {
     public class UserRegistration
     {
-
+        [JsonIgnore]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int id { get; set; }
 
+        [Required]
         [EmailAddress(ErrorMessage = "Email address is required")]
         [Key]
         [MaxLength(50)]
         public string Email { get; set; } = null!;
 
-        public string Password { get; set; }
+        [JsonIgnore]
+        public string? Password { get; set; }
 
         [Required(ErrorMessage = "FirstName is compulsory")]
         [MaxLength(50)]
@@ -29,15 +27,34 @@ namespace Team.Repo.Models
         [MaxLength(50)]
         public string LastName { get; set; } = null!;
 
+        [Required]
         [Phone(ErrorMessage = "Contact Number is compulsory")]
         [MaxLength(50)]
         public string ContactNumber { get; set; } = null!;
 
+        [Required]
+        [DateNotGreaterThanToday(ErrorMessage = "Date of birth cannot be greater than today.")]
         public DateOnly Dob { get; set; }
 
+        [JsonIgnore]
         public int? FlagRole { get; set; } = 0;
-
+        [JsonIgnore]
         public int? FlagCouunt { get; set; } = 0;
 
+    }
+    public class DateNotGreaterThanTodayAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            if (value is DateOnly dob)
+            {
+                if (dob > DateOnly.FromDateTime(DateTime.Now))
+                {
+                    return new ValidationResult("Date of birth cannot be greater than today.");
+                }
+            }
+
+            return ValidationResult.Success;
+        }
     }
 }

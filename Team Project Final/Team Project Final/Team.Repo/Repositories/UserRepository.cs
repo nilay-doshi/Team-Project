@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using Team.Repo.Interface;
@@ -20,7 +21,14 @@ namespace Team.Repo.Repositories
         {
             try
             {
-                 await _dbContext.Registration.AddAsync(userRegistration);
+                
+                var user1 = await checkEmailexists(userRegistration.Email);
+                if(user1)
+                {
+                    return null;
+                }
+
+                await _dbContext.Registration.AddAsync(userRegistration);
                  await _dbContext.SaveChangesAsync();
 
                 var user = await CheckUserAuthAsync(userRegistration.Email,userRegistration.Password);
@@ -34,6 +42,19 @@ namespace Team.Repo.Repositories
             }
         }
 
+        public async Task<bool> checkEmailexists(string email)
+        {
+            try
+            {
+                return  await _dbContext.Registration.AnyAsync(u=>u.Email==email);
+                
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = ex.Message;
+                throw new NotImplementedException(errorMessage);
+            }
+        }
         public async Task<UserRegistration> CheckUserAuthAsync(string email, string password)
         {
             try

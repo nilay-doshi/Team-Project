@@ -14,6 +14,7 @@ namespace Team.Service.Service
 {
     public class AuthService : IAuthService
     {
+        
         private readonly IEmailService _emailService;
         private readonly IPasswordHasher<UserRegistration> _passwordHasher;
         private readonly IPasswordHasher<UpdatepasswordDTO> _passwordHasher1;
@@ -41,24 +42,21 @@ namespace Team.Service.Service
         {
             try
             {
-                if (userRegistration.Email == null || userRegistration.Password == null)
-                {
-                    return new ResponseDTO
-                    {
-                        Status = 400,
-                        Message = "Email or Password is null"
-                    };
-                }
-                if (userRegistration.Dob.Year > DateTime.Now.Year)
-                {
-                    return new ResponseDTO { Status = 400, Message = "Dob cannot be greater then current date" };
-                }
-
                 userRegistration.Password = "team1234";
                 userRegistration.FlagRole = 0;
                 userRegistration.FlagCouunt = 0;
                 userRegistration.Password = _passwordHasher.HashPassword(userRegistration, userRegistration.Password);
                 var user = await _userRepository.Adduser(userRegistration);
+
+                if (user == null)
+                {
+                    return new ResponseDTO
+                    {
+                        Status = 400,
+                        Message = "Email already exists"
+                    };
+                }
+
                 await _emailService.SendEmail(userRegistration.Email, "Welcome to our platform " + userRegistration.FirstName, "Thank you for signing up! on our portal " + userRegistration.FirstName + " " + userRegistration.LastName + " . You can login using your email : " + userRegistration.Email);
                 userRegistration.Password = null;
                 return new ResponseDTO
@@ -67,9 +65,7 @@ namespace Team.Service.Service
                     Message = "Data Entered Success",
                     Data = user
                 };
-
             }
-
             catch (Exception ex)
             {
                 return new ResponseDTO { Status = 500, Error = ex.Message };
