@@ -7,9 +7,9 @@ namespace Team.Service.Service
     public class TeamService : ITeamService
     {
         private readonly ITeamRepository _teamRepository;
-
-        #region Constructor
-        public TeamService(ITeamRepository teamRepository)
+        
+    #region Constructor
+    public TeamService(ITeamRepository teamRepository)
         {
             _teamRepository = teamRepository;
         }
