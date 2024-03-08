@@ -1,11 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Team.Repo.Enums;
 
 namespace Team.Repo.Models
 {
     public class UserRegistration
     {
+        static int enumcount = (int)CountEnum.FlagCount;
+        static int enumUserId = (int)RoleEnum.User;
+
+
         [JsonIgnore]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int id { get; set; }
@@ -37,9 +42,9 @@ namespace Team.Repo.Models
         public DateOnly Dob { get; set; }
 
         [JsonIgnore]
-        public int? FlagRole { get; set; } = 0;
+        public int? FlagRole { get; set; } = enumUserId;
         [JsonIgnore]
-        public int? FlagCouunt { get; set; } = 0;
+        public int? FlagCouunt { get; set; } = enumcount;
 
     }
     public class DateNotGreaterThanTodayAttribute : ValidationAttribute

@@ -1,4 +1,5 @@
-﻿using Team.Repo.Interface;
+﻿using Team.Repo.Enums;
+using Team.Repo.Interface;
 using Team.Service.DTO;
 using Team.Service.Interface;
 
@@ -7,9 +8,14 @@ namespace Team.Service.Service
     public class TeamService : ITeamService
     {
         private readonly ITeamRepository _teamRepository;
-        
-    #region Constructor
-    public TeamService(ITeamRepository teamRepository)
+     //   static int enumUserId = (int)RoleEnum.User;
+        static int enumCoachcount = (int)CountEnum.CoachMaxCount;
+        static int enumCaptaincount = (int)CountEnum.CaptainMaxCount;
+        static int enumtotalCaptain = (int)CountEnum.TotalCaptain;
+        static int enumtotalPlayers = (int)CountEnum.TotalPlayers;
+
+        #region Constructor
+        public TeamService(ITeamRepository teamRepository)
         {
             _teamRepository = teamRepository;
         }
@@ -25,17 +31,17 @@ namespace Team.Service.Service
                 int afteraddCount = 0;
                 int playerCount = int.Parse(Checkplayerscount);
                 int captaincount = int.Parse(Checkcaptaincount);
-                if (captaincount > 0)
+                if (captaincount == enumtotalCaptain)
                 {
                     afteraddCount = playerCount + teamdto.playersEmail.Length + 1;
                 }
 
-                if (captaincount == 0)
+                if (captaincount < enumtotalCaptain)
                 {
                     afteraddCount = playerCount + teamdto.playersEmail.Length;
                 }
 
-                if (playerCount > 14 || afteraddCount > 15)
+                if (playerCount > enumtotalPlayers || afteraddCount > enumCoachcount)
                 {
                     var afteraddCount1 = afteraddCount - 1;
                     return new ResponseDTO

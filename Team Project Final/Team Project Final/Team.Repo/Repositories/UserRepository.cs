@@ -1,10 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 using Team.Repo.Interface;
 using Team.Repo.Models;
 
@@ -13,41 +7,30 @@ namespace Team.Repo.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly TeamDBContext _dbContext;
+
         public UserRepository(TeamDBContext teamDBContext)
         {
             _dbContext = teamDBContext;
         }
+
+        #region Add User
         public async Task<UserRegistration> Adduser(UserRegistration userRegistration)
         {
             try
             {
-                
+
                 var user1 = await checkEmailexists(userRegistration.Email);
-                if(user1)
+                if (user1)
                 {
                     return null;
                 }
 
                 await _dbContext.Registration.AddAsync(userRegistration);
-                 await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
 
-                var user = await CheckUserAuthAsync(userRegistration.Email,userRegistration.Password);
+                var user = await CheckUserAuthAsync(userRegistration.Email, userRegistration.Password);
                 user.Password = null;
                 return user;
-            }
-            catch(Exception ex)
-            {
-                string errorMessage = ex.Message;
-                throw new NotImplementedException(errorMessage);
-            }
-        }
-
-        public async Task<bool> checkEmailexists(string email)
-        {
-            try
-            {
-                return  await _dbContext.Registration.AnyAsync(u=>u.Email==email);
-                
             }
             catch (Exception ex)
             {
@@ -55,6 +38,25 @@ namespace Team.Repo.Repositories
                 throw new NotImplementedException(errorMessage);
             }
         }
+        #endregion
+
+        #region Check Email Exists
+        public async Task<bool> checkEmailexists(string email)
+        {
+            try
+            {
+                return await _dbContext.Registration.AnyAsync(u => u.Email == email);
+
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = ex.Message;
+                throw new NotImplementedException(errorMessage);
+            }
+        }
+        #endregion
+
+        #region Check User Authentication
         public async Task<UserRegistration> CheckUserAuthAsync(string email, string password)
         {
             try
@@ -68,6 +70,9 @@ namespace Team.Repo.Repositories
                 throw new NotImplementedException(errorMessage);
             }
         }
+        #endregion
+
+        #region Get User by email
 
         public async Task<string> GetUserByEmail1(string email)
         {
@@ -83,7 +88,9 @@ namespace Team.Repo.Repositories
                 throw new NotImplementedException(errorMessage);
             }
         }
+        #endregion
 
+        #region Update password 
         public async Task<string> updatePassword(string email, string password)
         {
             try
@@ -111,5 +118,6 @@ namespace Team.Repo.Repositories
                 throw new NotImplementedException(errorMessage);
             }
         }
+        #endregion
     }
 }

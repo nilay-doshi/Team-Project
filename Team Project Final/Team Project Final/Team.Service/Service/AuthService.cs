@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Team.Repo.Enums;
 using Team.Repo.Interface;
 using Team.Repo.Models;
 using Team.Service.DTO;
@@ -21,6 +22,9 @@ namespace Team.Service.Service
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        static int enumcountId = (int)CountEnum.FlagCount;
+        static int enumUserId = (int)RoleEnum.User;
+
 
         #region Constructor
 
@@ -42,9 +46,10 @@ namespace Team.Service.Service
         {
             try
             {
+                
                 userRegistration.Password = "team1234";
-                userRegistration.FlagRole = 0;
-                userRegistration.FlagCouunt = 0;
+                userRegistration.FlagRole = enumUserId;
+                userRegistration.FlagCouunt = enumcountId;
                 userRegistration.Password = _passwordHasher.HashPassword(userRegistration, userRegistration.Password);
                 var user = await _userRepository.Adduser(userRegistration);
 
