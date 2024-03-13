@@ -1,4 +1,5 @@
-﻿using Team.Service.DTO;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Team.Service.DTO;
 
 namespace Team.Service.Interface
 {
@@ -9,5 +10,10 @@ namespace Team.Service.Interface
         public Task<ResponseDTO> getCaptain();
         public Task<ResponseDTO> getPlayers();
         public Task<ResponseDTO> getCoach();
+
+        void  getGame()
+        {
+            Console.WriteLine("Hello from interface. ");
+        }
     }
 }

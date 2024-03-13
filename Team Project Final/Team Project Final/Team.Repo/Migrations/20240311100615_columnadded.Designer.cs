@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Team.Repo;
 
@@ -11,9 +12,11 @@ using Team.Repo;
 namespace Team.Repo.Migrations
 {
     [DbContext(typeof(TeamDBContext))]
-    partial class TeamDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240311100615_columnadded")]
+    partial class columnadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -106,6 +106,7 @@ namespace Team_Project_Final.Controllers
         public async Task<IActionResult> getPlayersDashboard()
         {
             var users = await _teamService.getPlayers();
+            _teamService.getGame();
             return Ok(users);
         }
         #endregion

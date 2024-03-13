@@ -153,5 +153,11 @@ namespace Team.Service.Service
             }
         }
         #endregion
+
+        //public async Task<string> getGame()
+        //{
+        //    Console.WriteLine("Hello from interface. ");
+        //    return null;
+        //}
     }
 }
